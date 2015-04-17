@@ -5,7 +5,10 @@ server.connection({
 	host: '0.0.0.0',
 	port: process.env.PORT || 3000, //what is process.env.PORT? It's an environment variable prepared by HEroku Deployment
 	routes: {
-		cors: true
+		cors: {
+      headers: ['Access-Control-Allow-Credentials'],
+      credentials: true
+    }
 	}
 });
 

@@ -38,7 +38,7 @@ server.route([
 							var uniqUdrQuery = { 
 								$or: [
 									{ username: newUser.username },
-									{ email: newUser.email }
+									{ email:    newUser.email }
 							]};
 
 							db.collection('users').count(uniqUdrQuery, function(err, userExist){

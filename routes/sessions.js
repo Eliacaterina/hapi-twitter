@@ -1,10 +1,11 @@
 var Bcrypt = require('bcrypt');
-
+var Auth =require('./auth');
 exports.register = function(server, option, next) {
 //everything under this register will get loaded into the plugins line 14
 	//include routes. because we want ot include many routes we can do an array[]
 	server.route([ 
 	  {
+	  		// signing in
 	     	method: 'POST',
 	     	path: '/sessions',
 	     	handler: function(request, reply) {
@@ -56,9 +57,41 @@ exports.register = function(server, option, next) {
 
 	     		});
 	     	}	     	
-		}
-	
-	]);
+		},
+	  {
+      method: 'GET',
+      path: '/authenticated',
+      handler: function(request, reply) {
+      	Auth.authenticated(request, function(result) {
+      		reply(result);
+      	});
+      } 
+    },
+    {
+    	//logging out
+    	method: 'DELETE',
+    	path: '/sessions',
+    	handler: function(request, reply) {
+    		//obtain the session
+				var session = request.session.get('hapi_twitter_session');
+
+    		//initial db
+    		var db = request.server.plugins['hapi-mongodb'].db
+
+    		if (!session) {
+    			return reply({ "message": "Already logged out"})
+    			//return will terminate the rest of the program
+    		}
+    		//search for the same session in the db
+    		db.collection('sessions').remove({"session_id": session.session_key },
+    			function(err, writeResult){
+    			if (err) { return reply('Internal MongoDB error', err); }
+    				reply(writeResult);
+    			});
+    		//remove the session in the db
+    	}
+    }
+  ]);
 
   next();
 };
