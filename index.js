@@ -15,7 +15,7 @@ server.connection({
 
 //this is where you include dependencies
 var plugins = [
-	
+	{ register: require('./routes/tweets.js')},
 	{ register: require('./routes/sessions.js') }, //to make this happen in users. js we have to do line 4. same in sessions.js
 	{ register: require('./routes/users.js') },
 	{ 
