@@ -1,5 +1,6 @@
 var Joi = require('joi');
 var Auth =require('./auth'); //allows us use the auth.js file
+
 exports.register = function(server, options, next) {	
 	
 server.route([
@@ -11,7 +12,9 @@ server.route([
 				var db =request.server.plugins['hapi-mongodb'].db;
 
 				db.collection('tweets').find().toArray(function(err, tweets) {
-					if(err) { return reply('Internal MongoDB error', err); }
+					if (err) { 
+            return reply('Internal MongoDB error', err);
+				  }
 
 					reply(tweets);
 				});
@@ -27,10 +30,11 @@ server.route([
 					Auth.authenticated(request, function(result) {
 						if (result.authenticated) {
 							//if the user is logged in / authenticated, create the new post
-							var db =request.server.plugins['hapi-mongodb'].db;
-							var session =request.session.get('hapi_twitter_session');
+							var db       = request.server.plugins['hapi-mongodb'].db;
+							var session  = request.session.get('hapi_twitter_session');
 							var ObjectId = request.server.plugins['hapi-mongodb'].ObjectID;
-							var tweet = {
+							
+              var tweet = {
 								"message": request.payload.tweet.message,
 								"user_id": ObjectId(session.user_id)
 							};
@@ -80,7 +84,7 @@ server.route([
       if (result.authenticated) {
         var tweet_id = encodeURIComponent(request.params.id);
 
-        var db = request.server.plugins['hapi-mongodb'].db;
+        var db       = request.server.plugins['hapi-mongodb'].db;
         var ObjectId = request.server.plugins['hapi-mongodb'].ObjectID;
 
         db.collection('tweets').remove({ "_id": ObjectId(tweet_id) }, function(err, writeResult) {
@@ -99,7 +103,7 @@ server.route([
   method: 'GET',
   path: '/users/{username}/tweets',
   handler: function(request, reply) {
-    var db = request.server.plugins['hapi-mongodb'].db;
+    var db       = request.server.plugins['hapi-mongodb'].db;
     var username = encodeURIComponent(request.params.username);
 
     db.collection('users').findOne({ "username": username }, function(err, user) {
